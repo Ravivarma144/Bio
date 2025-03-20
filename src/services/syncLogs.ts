@@ -2,6 +2,8 @@ import axios from "axios";
 import { db } from "../db/database";
 import { config } from "dotenv";
 
+import moment from "moment-timezone";
+
 config();
 
 const PAYROLL_API = process.env.PAYROLL_API!;
@@ -34,24 +36,40 @@ export async function syncAttendanceLogs() {
             console.log("No unsynced logs to sync.");
             return;
         }
-
-        for (const log of logs) {
+        const timeZone = moment.tz.guess();
+        await logs.map(async (log: any) => {
             try {
                 const response = await axios.post(PAYROLL_API, {
                     employee_id: log.employee_id,
                     punch_time: log.punch_time,
                     punch_type: log.punch_type,
+                    device_id: log.device_id,
+                    device_type: log.device_type,
+                    timeZone: process.env.TZ || timeZone
+
                 });
 
                 if (response.status === 200) {
                     await db.query("UPDATE attendance SET synced = TRUE WHERE id = ?", [log.id]);
                     console.log(`Log ID ${log.id} synced successfully.`);
                 }
+                return response.status;
             } catch (error) {
                 console.error(`Error syncing log ID ${log.id}:`, error);
             }
-        }
+        })
     } catch (error) {
         console.error("Error retrieving logs from database:", error);
+    }
+}
+
+export async function updateNotSysnc()
+{
+    try{
+        await db.query("UPDATE attendance SET synced = FALSE ");
+    }
+    catch(err)
+    {
+        console.log(err)
     }
 }

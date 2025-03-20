@@ -37,9 +37,7 @@ export async function fetchAttendanceLogs() {
     // Subtract 10 minutes by default setting
     const timeMinusByConfig = currentTime.clone().subtract(TIME_GAP_MINUTES, "minutes");
     // <FromDateTime>2025-03-01 00:01</FromDateTime>
-    //   <ToDateTime>2025-03-17 23:59</ToDateTime>
-    
-
+    // <ToDateTime>2025-03-20 23:59</ToDateTime>
     // <FromDateTime>2025-03-01 00:01</FromDateTime>
     // <ToDateTime>2025-03-20 23:59</ToDateTime>
 
@@ -49,8 +47,8 @@ export async function fetchAttendanceLogs() {
   <soap:Body>
     <GetTransactionsLog xmlns="http://tempuri.org/">
       <SerialNumber>${device.id}</SerialNumber>
-    <FromDateTime>${timeMinusByConfig.format("YYYY-MM-DD HH:mm")} </FromDateTime>
-    <ToDateTime>${currentTime.format("YYYY-MM-DD HH:mm")}</ToDateTime>
+      <FromDateTime>${timeMinusByConfig.format("YYYY-MM-DD HH:mm")} </FromDateTime>
+      <ToDateTime>${currentTime.format("YYYY-MM-DD HH:mm")}</ToDateTime>
       <UserName>${process.env.ICLOCK_USER}</UserName>
       <UserPassword>${process.env.ICLOCK_PASSWORD}</UserPassword>
       <strDataList>string</strDataList>
